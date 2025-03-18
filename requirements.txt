@@ -1,0 +1,6 @@
+matplotlib==3.9.3
+matplotlib-inline==0.1.7
+mplfinance==0.12.10b0
+pandas==2.2.3
+streamlit==1.43.2
+yfinance==0.2.54
