@@ -98,6 +98,26 @@ while True:
     candlestick_ohlc(ax_btcusd, btcusd_values, width=0.0006, colorup='g', colordown='r')
     ax_btcusd.set_title("BTCUSD")
     ax_btcusd.xaxis.set_major_formatter(mpl_dates.DateFormatter('%H:%M'))
+
+    # Kairi Relative Index (KRI) with Arrows
+    length = 14  # From kairi.pine
+    src = btcusd_data['Close']  # Source (close price)
+    sma = src.rolling(window=length).mean()
+    kri = 100 * (src - sma) / sma
+
+    # Buy/Sell signals
+    buySignal = pd.Series(False, index=btcusd_data.index)
+    sellSignal = pd.Series(False, index=btcusd_data.index)
+    for i in range(1, len(btcusd_data)):
+        if kri.iloc[i-1].item() < 0 and kri.iloc[i].item() >= 0:
+            buySignal[i] = True
+        elif kri.iloc[i-1].item() > 0 and kri.iloc[i].item() <= 0:
+            sellSignal[i] = True
+
+    # Plot Buy/Sell signals
+    ax_btcusd.plot(btcusd_data['Date'][buySignal.values], btcusd_data['Close'][buySignal.values], '^', markersize=5, color='green', label='Buy Signal')
+    ax_btcusd.plot(btcusd_data['Date'][sellSignal.values], btcusd_data['Close'][sellSignal.values], 'v', markersize=5, color='red', label='Sell Signal')
+
     btcusd_chart.pyplot(fig_btcusd, use_container_width=True)
 
     time.sleep(60)
