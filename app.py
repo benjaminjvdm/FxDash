@@ -110,9 +110,9 @@ while True:
     sellSignal = pd.Series(False, index=btcusd_data.index)
     for i in range(1, len(btcusd_data)):
         if kri.iloc[i-1].item() < 0 and kri.iloc[i].item() >= 0:
-            buySignal[i] = True
+            buySignal.iloc[i] = True
         elif kri.iloc[i-1].item() > 0 and kri.iloc[i].item() <= 0:
-            sellSignal[i] = True
+            sellSignal.iloc[i] = True
 
     # Plot Buy/Sell signals
     ax_btcusd.plot(btcusd_data['Date'][buySignal.values], btcusd_data['Close'][buySignal.values], '^', markersize=5, color='green', label='Buy Signal')
