@@ -35,6 +35,19 @@ while True:
     candlestick_ohlc(ax_gbpjpy, gbpjpy_values, width=0.0006, colorup='g', colordown='r')
     ax_gbpjpy.set_title("GBPJPY")
     ax_gbpjpy.xaxis.set_major_formatter(mpl_dates.DateFormatter('%H:%M'))
+
+    # Calculate Quarter Theory levels
+    last_price = gbpjpy_data['Close'].iloc[-1].item()
+    nearest_quarter = round(last_price * 4) / 4
+    upper_quarter = nearest_quarter + 0.250
+    lower_quarter = nearest_quarter - 0.250
+
+    # Overlay Quarter Theory levels
+    ax_gbpjpy.axhline(upper_quarter, color='blue', linestyle='--')
+    ax_gbpjpy.text(x=gbpjpy_data['Date'].iloc[-1], y=upper_quarter, s=str(round(upper_quarter, 3)), color='blue')
+    ax_gbpjpy.axhline(lower_quarter, color='orange', linestyle='--')
+    ax_gbpjpy.text(x=gbpjpy_data['Date'].iloc[-1], y=lower_quarter, s=str(round(lower_quarter, 3)), color='orange')
+
     gbpjpy_chart.pyplot(fig_gbpjpy, use_container_width=True)
 
     audjpy_data = data["AUDJPY=X"].copy()
