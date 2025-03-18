@@ -23,11 +23,15 @@ while True:
     # Fetch data for each symbol
     data = {}
     for symbol in symbols:
-        data[symbol] = yf.download(symbol, period="1d", interval="15m")
+        data[symbol] = yf.download(symbol, period="1wk", interval="15m")
 
     # Create candlestick charts
     fig_gbpjpy, ax_gbpjpy = plt.subplots()
     gbpjpy_data = data["GBPJPY=X"].copy()
+
+    # Filter data to last 24 hours
+    gbpjpy_data = gbpjpy_data.iloc[-96:] # 24 hours * 4 intervals per hour (15m interval)
+
     gbpjpy_data['Date'] = gbpjpy_data.index.map(mpl_dates.date2num)
     gbpjpy_values = [tuple(x) for x in gbpjpy_data[['Date', 'Open', 'High', 'Low', 'Close']].values]
     fig_gbpjpy, ax_gbpjpy = plt.subplots()
@@ -47,6 +51,10 @@ while True:
     ax_gbpjpy.text(x=gbpjpy_data['Date'].iloc[-1], y=upper_quarter, s=str(round(upper_quarter, 3)), color='blue')
     ax_gbpjpy.axhline(lower_quarter, color='orange', linestyle='--')
     ax_gbpjpy.text(x=gbpjpy_data['Date'].iloc[-1], y=lower_quarter, s=str(round(lower_quarter, 3)), color='orange')
+
+    # Calculate and overlay 50-period EMA
+    ema_50 = data["GBPJPY=X"]['Close'].ewm(span=50).mean()
+    ax_gbpjpy.plot(gbpjpy_data['Date'], ema_50.iloc[-96:], color='yellow', label='EMA 50')
 
     gbpjpy_chart.pyplot(fig_gbpjpy, use_container_width=True)
 
