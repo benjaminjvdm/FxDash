@@ -1,5 +1,6 @@
-import yfinance as yf
 import streamlit as st
+st.set_page_config(layout="wide")
+import yfinance as yf
 import pandas as pd
 import matplotlib.pyplot as plt
 import time
@@ -30,7 +31,7 @@ while True:
     gbpjpy_data = data["GBPJPY=X"].copy()
 
     # Filter data to last 24 hours
-    gbpjpy_data = gbpjpy_data.iloc[-96:] # 24 hours * 4 intervals per hour (15m interval)
+    gbpjpy_data = gbpjpy_data.iloc[-96:] 
 
     gbpjpy_data['Date'] = gbpjpy_data.index.map(mpl_dates.date2num)
     gbpjpy_values = [tuple(x) for x in gbpjpy_data[['Date', 'Open', 'High', 'Low', 'Close']].values]
@@ -47,14 +48,14 @@ while True:
     lower_quarter = nearest_quarter - 0.250
 
     # Overlay Quarter Theory levels
-    ax_gbpjpy.axhline(upper_quarter, color='blue', linestyle='--')
-    ax_gbpjpy.text(x=gbpjpy_data['Date'].iloc[-1], y=upper_quarter, s=str(round(upper_quarter, 3)), color='blue')
-    ax_gbpjpy.axhline(lower_quarter, color='orange', linestyle='--')
-    ax_gbpjpy.text(x=gbpjpy_data['Date'].iloc[-1], y=lower_quarter, s=str(round(lower_quarter, 3)), color='orange')
+    ax_gbpjpy.axhline(upper_quarter, color='green', linestyle='--')
+    ax_gbpjpy.text(x=gbpjpy_data['Date'].iloc[-1], y=upper_quarter, s=str(round(upper_quarter, 3)), color='green')
+    ax_gbpjpy.axhline(lower_quarter, color='red', linestyle='--')
+    ax_gbpjpy.text(x=gbpjpy_data['Date'].iloc[-1], y=lower_quarter, s=str(round(lower_quarter, 3)), color='red')
 
     # Calculate and overlay 50-period EMA
     ema_50 = data["GBPJPY=X"]['Close'].ewm(span=50).mean()
-    ax_gbpjpy.plot(gbpjpy_data['Date'], ema_50.iloc[-96:], color='yellow', label='EMA 50')
+    ax_gbpjpy.plot(gbpjpy_data['Date'], ema_50.iloc[-96:], color='white', label='EMA 50')
 
     gbpjpy_chart.pyplot(fig_gbpjpy, use_container_width=True)
 
@@ -62,7 +63,7 @@ while True:
     audjpy_data['Date'] = audjpy_data.index.map(mpl_dates.date2num)
 
     # Filter data to last 24 hours
-    audjpy_data = audjpy_data.iloc[-96:] # 24 hours * 4 intervals per hour (15m interval)
+    audjpy_data = audjpy_data.iloc[-96:] 
 
     audjpy_values = [tuple(x) for x in audjpy_data[['Date', 'Open', 'High', 'Low', 'Close']].values]
     fig_audjpy, ax_audjpy = plt.subplots()
@@ -78,19 +79,19 @@ while True:
     lower_quarter = nearest_quarter - 0.250
 
     # Overlay Quarter Theory levels
-    ax_audjpy.axhline(upper_quarter, color='blue', linestyle='--')
-    ax_audjpy.text(x=audjpy_data['Date'].iloc[-1], y=upper_quarter, s=str(round(upper_quarter, 3)), color='blue')
-    ax_audjpy.axhline(lower_quarter, color='orange', linestyle='--')
-    ax_audjpy.text(x=audjpy_data['Date'].iloc[-1], y=lower_quarter, s=str(round(lower_quarter, 3)), color='orange')
+    ax_audjpy.axhline(upper_quarter, color='green', linestyle='--')
+    ax_audjpy.text(x=audjpy_data['Date'].iloc[-1], y=upper_quarter, s=str(round(upper_quarter, 3)), color='green')
+    ax_audjpy.axhline(lower_quarter, color='red', linestyle='--')
+    ax_audjpy.text(x=audjpy_data['Date'].iloc[-1], y=lower_quarter, s=str(round(lower_quarter, 3)), color='red')
 
     # Calculate and overlay 50-period EMA
     ema_50 = data["AUDJPY=X"]['Close'].ewm(span=50).mean()
-    ax_audjpy.plot(audjpy_data['Date'], ema_50.iloc[-96:], color='yellow', label='EMA 50')
+    ax_audjpy.plot(audjpy_data['Date'], ema_50.iloc[-96:], color='white', label='EMA 50')
 
     audjpy_chart.pyplot(fig_audjpy, use_container_width=True)
 
     btcusd_data = data["BTC-USD"].copy()
-    btcusd_data = btcusd_data.iloc[-96:] # 24 hours * 4 intervals per hour (15m interval)
+    btcusd_data = btcusd_data.iloc[-96:] 
     btcusd_data['Date'] = btcusd_data.index.map(mpl_dates.date2num)
     btcusd_values = [tuple(x) for x in btcusd_data[['Date', 'Open', 'High', 'Low', 'Close']].values]
     fig_btcusd, ax_btcusd = plt.subplots()
@@ -115,8 +116,8 @@ while True:
             sellSignal.iloc[i] = True
 
     # Plot Buy/Sell signals
-    ax_btcusd.plot(btcusd_data['Date'][buySignal.values], btcusd_data['Close'][buySignal.values], '^', markersize=5, color='green', label='Buy Signal')
-    ax_btcusd.plot(btcusd_data['Date'][sellSignal.values], btcusd_data['Close'][sellSignal.values], 'v', markersize=5, color='red', label='Sell Signal')
+    ax_btcusd.plot(btcusd_data['Date'][buySignal.values], btcusd_data['Low'][buySignal.values], '^', markersize=5, color='green', label='Buy Signal')
+    ax_btcusd.plot(btcusd_data['Date'][sellSignal.values], btcusd_data['High'][sellSignal.values], 'v', markersize=5, color='red', label='Sell Signal')
 
     btcusd_chart.pyplot(fig_btcusd, use_container_width=True)
 
