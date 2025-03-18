@@ -90,6 +90,7 @@ while True:
     audjpy_chart.pyplot(fig_audjpy, use_container_width=True)
 
     btcusd_data = data["BTC-USD"].copy()
+    btcusd_data = btcusd_data.iloc[-96:] # 24 hours * 4 intervals per hour (15m interval)
     btcusd_data['Date'] = btcusd_data.index.map(mpl_dates.date2num)
     btcusd_values = [tuple(x) for x in btcusd_data[['Date', 'Open', 'High', 'Low', 'Close']].values]
     fig_btcusd, ax_btcusd = plt.subplots()
