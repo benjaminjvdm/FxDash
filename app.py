@@ -1,5 +1,4 @@
 import streamlit as st
-st.set_page_config(layout="wide")
 import yfinance as yf
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -7,8 +6,8 @@ import time
 from mplfinance.original_flavor import candlestick_ohlc
 import matplotlib.dates as mpl_dates
 
+st.set_page_config(page_title="FxDash", page_icon="💸", layout="wide")
 st.title("Real-Time Financial Dashboard")
-st.set_page_config(page_title="FxDash", page_icon="💸")
 
 # Define the symbols
 symbols = ["GBPJPY=X", "AUDJPY=X", "BTC-USD"]
