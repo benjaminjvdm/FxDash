@@ -10,66 +10,65 @@ st.set_page_config(page_title="FxDash", page_icon="💸", layout="wide")
 st.title("Real-Time Financial Dashboard")
 
 # Define the symbols
-symbols = ["GBPJPY=X"]
-intervals = ["5m"]
+symbols = ["GBPJPY=X", "AUDJPY=X", "GC=F"]
 
 # Define the layout
-col1 = st.columns(1)[0]
+col1, col2 = st.columns(2)
 
 # Placeholder for charts
-gbpjpy_chart_5m = col1.empty()
-#gbpjpy_chart_15m = col2.empty()
-#gbpjpy_chart_1h = col3.empty()
+gbpjpy_chart = col1.empty()
+audjpy_chart = col2.empty()
+xauusd_chart = st.empty()
 
 while True:
     # Fetch data for each symbol
     data = {}
     for symbol in symbols:
-        if symbol == "GBPJPY=X":
-            for interval in intervals:
-                try:
-                    data[symbol + "_" + interval] = yf.download(symbol, period="1wk", interval=interval)
-                except Exception as e:
-                    print(f"Error downloading data for {symbol} {interval}: {e}")
-                    time.sleep(60)  # Wait for 60 seconds before retrying
-                    continue
-                time.sleep(5)  # Add a 5-second delay between API calls 
+        data[symbol] = yf.download(symbol, period="1wk", interval="15m")
 
-    # Create candlestick charts for GBPJPY
-    for interval in intervals:
-        fig_gbpjpy, ax_gbpjpy = plt.subplots()
-        gbpjpy_data = data["GBPJPY=X_" + interval].copy()
+    # Create candlestick charts
+    fig_gbpjpy, ax_gbpjpy = plt.subplots()
+    gbpjpy_data = data["GBPJPY=X"].copy()
 
-        # Filter data to last 24 hours
-        if interval == "5m":
-            gbpjpy_data = gbpjpy_data.iloc[-28:] # 24 hours * 60 minutes / 5 minutes
-        #elif interval == "15m":
-        #    gbpjpy_data = gbpjpy_data.iloc[-96:] # 24 hours * 60 minutes / 15 minutes
-        #else:
-        #    gbpjpy_data = gbpjpy_data.iloc[-24:] # 24 hours * 1 hour / 1 hour
+    # Filter data to last 24 hours
+    gbpjpy_data = gbpjpy_data.iloc[-96:] 
 
     gbpjpy_data['Date'] = gbpjpy_data.index.map(mpl_dates.date2num)
     gbpjpy_values = [tuple(x) for x in gbpjpy_data[['Date', 'Open', 'High', 'Low', 'Close']].values]
     fig_gbpjpy, ax_gbpjpy = plt.subplots()
     ax_gbpjpy.set_facecolor('black')
     candlestick_ohlc(ax_gbpjpy, gbpjpy_values, width=0.0006, colorup='g', colordown='r')
-    ax_gbpjpy.set_title(f"GBPJPY ({interval})")
+    ax_gbpjpy.set_title("GBPJPY")
     ax_gbpjpy.xaxis.set_major_formatter(mpl_dates.DateFormatter('%H:%M'))
 
+    gbpjpy_chart.pyplot(fig_gbpjpy, use_container_width=True)
 
+    audjpy_data = data["AUDJPY=X"].copy()
+    audjpy_data['Date'] = audjpy_data.index.map(mpl_dates.date2num)
 
-    if interval == "5m":
-        gbpjpy_chart_5m.pyplot(fig_gbpjpy, use_container_width=True)
-    #elif interval == "15m":
-    #    gbpjpy_chart_15m.pyplot(fig_gbpjpy, use_container_width=True)
-    #else:
-    #    gbpjpy_chart_1h.pyplot(fig_gbpjpy, use_container_width=True)
+    # Filter data to last 24 hours
+    audjpy_data = audjpy_data.iloc[-96:] 
 
+    audjpy_values = [tuple(x) for x in audjpy_data[['Date', 'Open', 'High', 'Low', 'Close']].values]
+    fig_audjpy, ax_audjpy = plt.subplots()
+    ax_audjpy.set_facecolor('black')
+    candlestick_ohlc(ax_audjpy, audjpy_values, width=0.0006, colorup='g', colordown='r')
+    ax_audjpy.set_title("AUDJPY")
+    ax_audjpy.xaxis.set_major_formatter(mpl_dates.DateFormatter('%H:%M'))
 
+    audjpy_chart.pyplot(fig_audjpy, use_container_width=True)
 
+    xauusd_data = data["GC=F"].copy()
+    xauusd_data = xauusd_data.iloc[-96:] 
+    xauusd_data['Date'] = xauusd_data.index.map(mpl_dates.date2num)
+    xauusd_values = [tuple(x) for x in xauusd_data[['Date', 'Open', 'High', 'Low', 'Close']].values]
+    fig_xauusd, ax_xauusd = plt.subplots()
+    ax_xauusd.set_facecolor('black')
+    candlestick_ohlc(ax_xauusd, xauusd_values, width=0.0006, colorup='g', colordown='r')
+    ax_xauusd.set_title("xauusd")
+    ax_xauusd.xaxis.set_major_formatter(mpl_dates.DateFormatter('%H:%M'))
 
-    
-        now = time.localtime()
-        seconds_to_sleep = 60 - now.tm_sec
-        time.sleep(seconds_to_sleep)
-        st.rerun()
+    xauusd_chart.pyplot(fig_xauusd, use_container_width=True)
+
+    time.sleep(60)
+    st.rerun()
